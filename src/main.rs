@@ -13,7 +13,6 @@ async fn main() {
     config.save();
 
     logger::init_logger(&config.logger.log_level);
-    log::debug!("ログ出力が準備できました！");
 
     let (watch_log_sender, watch_log_receiver) = mpsc::channel();
 

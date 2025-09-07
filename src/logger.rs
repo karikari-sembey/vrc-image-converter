@@ -20,6 +20,7 @@ pub fn init_logger(level: &LogLevel) {
     if default.chain(console_config).apply().is_err() {
         println!("ログの設定に失敗しました。");
     }
+    log::debug!("ログ出力が準備できました！");
 }
 
 #[derive(Serialize, Deserialize, Default, Debug, Clone)]
