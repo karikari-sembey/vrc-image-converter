@@ -4,14 +4,16 @@ mod converter;
 mod logger;
 mod logwatcher;
 use config::Config;
+use logwatcher::LogWatcher;
 use notify::{RecursiveMode, Watcher, recommended_watcher};
 use std::{path::Path, sync::mpsc};
 
 #[tokio::main]
 async fn main() {
     let config = Config::load();
-    config.save();
+    let log_watcher = LogWatcher::new();
 
+    config.save();
     logger::init_logger(&config.logger.log_level);
 
     let (watch_log_sender, watch_log_receiver) = mpsc::channel();
@@ -28,7 +30,7 @@ async fn main() {
             return;
         }
 
-        tokio::spawn(logwatcher::watch_log(config.clone(), watch_log_receiver));
+        tokio::spawn(log_watcher.watch_log(config.clone(), watch_log_receiver));
 
         console_commands::read_command();
         drop(watcher);

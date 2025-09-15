@@ -10,6 +10,9 @@ pub struct ImageConverter {}
 impl ImageConverter {
     pub fn convert(src_path: &Path, dst_path: &Path, codec: &Codec) {
         let buf_reader = BufReader::new(fs::File::open(src_path).unwrap());
+        let buf_writer = BufWriter::new(
+            fs::File::create(Path::new(&format!("{}", dst_path.display()))).unwrap(),
+        );
         let decoder = png::Decoder::new(buf_reader);
         let mut reader = decoder.read_info().unwrap();
         let mut img_buf = vec![0; reader.output_buffer_size().unwrap()];
@@ -20,10 +23,6 @@ impl ImageConverter {
 
         match codec {
             Codec::WebP => {
-                let buf_writer = BufWriter::new(
-                    fs::File::create(Path::new(&format!("{}{}", dst_path.display(), ".webp")))
-                        .unwrap(),
-                );
                 let mut encoder = WebPEncoder::new(buf_writer);
                 let color_type = match img_info.color_type {
                     png::ColorType::Rgb => image_webp::ColorType::Rgb8,

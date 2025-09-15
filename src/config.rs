@@ -46,6 +46,16 @@ pub enum Codec {
     Tiff,
 }
 
+impl Codec {
+    pub fn file_extension(&self) -> &str {
+        match self {
+            Codec::WebP => "webp",
+            Codec::Png => "png",
+            Codec::Tiff => "tiff",
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(default)]
 pub struct InputConfig {
