@@ -1,0 +1,18 @@
+{
+	"name": "Rust",
+	"image": "mcr.microsoft.com/devcontainers/rust:1-1-bullseye",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"vadimcn.vscode-lldb",
+				"fill-labs.dependi",
+				"tamasfe.even-better-toml",
+				"Gxl.git-graph-3",
+				"GitHub.vscode-pull-request-github",
+				"yzhang.markdown-all-in-one",
+				"DavidAnson.vscode-markdownlint",
+				"rust-lang.rust-analyzer"
+			]
+		}
+	}
+}
