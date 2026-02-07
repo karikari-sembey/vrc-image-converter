@@ -1,14 +1,16 @@
-use crate::config::Codec;
+use crate::{config::Codec, state::VRChatState};
 use image_webp::WebPEncoder;
 use std::{
     fs,
     io::{BufReader, BufWriter},
     path::Path,
+    str::FromStr,
 };
+use xmp_toolkit::{XmpMeta, XmpValue, xmp_ns};
 
 pub struct ImageConverter {}
 impl ImageConverter {
-    pub fn convert(src_path: &Path, dst_path: &Path, codec: &Codec) {
+    pub fn convert(src_path: &Path, dst_path: &Path, codec: &Codec, vrchat_state: &VRChatState) {
         let buf_reader = BufReader::new(fs::File::open(src_path).unwrap());
         let buf_writer = BufWriter::new(
             fs::File::create(Path::new(&format!("{}", dst_path.display()))).unwrap(),
@@ -36,8 +38,27 @@ impl ImageConverter {
                     encoder.set_exif_metadata(exif_metadata.to_vec());
                 }
                 for itxt_chunk in itxt_chunks {
-                    encoder.set_xmp_metadata(itxt_chunk.get_text().unwrap().as_bytes().to_vec());
-                    println!("XMP: {}", itxt_chunk.get_text().unwrap());
+                    if itxt_chunk.keyword == "XML:com.adobe.xmp" {
+                        let mut xmp = XmpMeta::from_str(&itxt_chunk.get_text().unwrap_or_default())
+                            .unwrap_or_default();
+                        let ns_vrcic = "http://ns.guraril.com/vrcic/1.0/";
+                        XmpMeta::register_namespace(ns_vrcic, "vrcic").unwrap();
+                        xmp.set_property(
+                            xmp_ns::XMP,
+                            "CreatorTool",
+                            &XmpValue::new(String::from("VRChat Image Converter")),
+                        )
+                        .unwrap();
+                        xmp.set_property(
+                            ns_vrcic,
+                            "InstanceUsers",
+                            &XmpValue::new(vrchat_state.instance_users.join(", ")),
+                        )
+                        .unwrap();
+
+                        encoder.set_xmp_metadata(xmp.to_string().into_bytes());
+                        println!("{xmp}");
+                    }
                 }
                 encoder
                     .encode(&img_buf, img_info.width, img_info.height, color_type)

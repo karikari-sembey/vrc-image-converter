@@ -1,4 +1,4 @@
-use crate::{config::Config, converter::ImageConverter};
+use crate::{config::Config, converter::ImageConverter, state::VRChatState};
 use notify::{
     Error, Event, EventKind,
     event::{DataChange, ModifyKind},
@@ -12,24 +12,31 @@ use std::{
 };
 
 pub struct LogWatcher {
+    joined_user_name: Regex,
+    left_user_name: Regex,
     screenshot_line: Regex,
     screenshot_info: Regex,
+    vrc_state: VRChatState,
 }
 
 impl LogWatcher {
     pub fn new() -> Self {
         Self {
+            joined_user_name: Regex::new(r"\[Behaviour\] OnPlayerJoined (.+) \((usr_.+)\)")
+                .unwrap(),
+            left_user_name: Regex::new(r"\[Behaviour\] OnPlayerLeft (.+) \((usr_.+)\)").unwrap(),
             screenshot_line: Regex::new(r"\[VRC Camera\] Took screenshot to: .+(VRChat_.+)")
                 .unwrap(),
             screenshot_info: Regex::new(
                 r"VRChat_(\d{4})-(\d{2})-(\d{2})_(\d{2})-(\d{2})-(\d{2}).(\d{3})_(\d+)x(\d+)",
             )
             .unwrap(),
+            vrc_state: VRChatState::default(),
         }
     }
 
     pub async fn watch_log(
-        self,
+        mut self,
         config: Config,
         watch_log_receiver: Receiver<Result<Event, Error>>,
     ) {
@@ -52,6 +59,12 @@ impl LogWatcher {
                             if line.contains(" Warning    -  ") || line.contains(" Error      -  ")
                             {
                                 continue;
+                            } else if let Some(caps) = self.joined_user_name.captures(&line) {
+                                self.vrc_state.instance_users.push(String::from(&caps[1]));
+                                log::info!("user joined: {}", &caps[1]);
+                            } else if let Some(caps) = self.left_user_name.captures(&line) {
+                                self.vrc_state.instance_users.retain(|x| x != &caps[1]);
+                                log::info!("user left: {}", &caps[1]);
                             } else if let Some(caps) = self.screenshot_line.captures(&line)
                                 && let Some(info) = self.screenshot_info.captures(&caps[1])
                             {
@@ -82,6 +95,7 @@ impl LogWatcher {
                                         &src_path,
                                         &dst_path,
                                         &config.output.codec,
+                                        &self.vrc_state,
                                     );
                                 }
                             }
