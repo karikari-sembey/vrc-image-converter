@@ -16,3 +16,4 @@ regex = { version = "1.12.3" }
 png = { version = "0.18.0" }
 image-webp = { version = "0.2.4" }
 tiff = { version = "0.11.2" }
+xmp_toolkit = { version = "1.12.0" }

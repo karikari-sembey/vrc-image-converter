@@ -3,6 +3,7 @@ mod console_commands;
 mod converter;
 mod logger;
 mod logwatcher;
+mod state;
 use config::Config;
 use logwatcher::LogWatcher;
 use notify::{RecursiveMode, Watcher, recommended_watcher};
