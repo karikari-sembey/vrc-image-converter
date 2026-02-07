@@ -4,15 +4,15 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-tokio = { version = "1.47.1", features = ["full"] }
-image = { version = "0.25.8" }
-serde = { version = "1.0.219", features = ["derive"] }
-serde_json = { version = "1.0.143" }
-log = { version = "0.4.28" }
+tokio = { version = "1.49.0", features = ["full"] }
+image = { version = "0.25.9" }
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = { version = "1.0.149" }
+log = { version = "0.4.29" }
 fern = { version = "0.7.1" }
-chrono = { version = "0.4.41" }
+chrono = { version = "0.4.43" }
 notify = { version = "8.2.0" }
-regex = { version = "1.11.2" }
+regex = { version = "1.12.3" }
 png = { version = "0.18.0" }
 image-webp = { version = "0.2.4" }
-tiff = { version = "0.10.3" }
+tiff = { version = "0.11.2" }
