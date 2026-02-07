@@ -65,9 +65,7 @@ impl ImageConverter {
                     .unwrap();
             }
             _ => {
-                unimplemented!(
-                    "これが表示されているなら、バグの可能性が高いです。GitHubにて報告してもらえると助かります。"
-                )
+                unimplemented!("未実装の機能です。")
             }
         }
     }
