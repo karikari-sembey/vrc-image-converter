@@ -74,7 +74,7 @@ impl LogWatcher {
                                         .replace("fff", &info[7])
                                         .replace("XXXX", &info[8])
                                         .replace("YYYY", &info[9]),
-                                    config.output.codec.file_extension()
+                                    config.output.codec
                                 ));
                                 if !fs::exists(&dst_path).unwrap() && fs::exists(&src_path).unwrap()
                                 {

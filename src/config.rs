@@ -46,13 +46,19 @@ pub enum Codec {
     Tiff,
 }
 
-impl Codec {
-    pub fn file_extension(&self) -> &str {
-        match self {
-            Codec::WebP => "webp",
-            Codec::Png => "png",
-            Codec::Tiff => "tiff",
-        }
+impl std::fmt::Display for Codec {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
+        write!(
+            f,
+            "{}",
+            match self {
+                Codec::WebP => "webp",
+                Codec::Png => "png",
+                Codec::Tiff => "tiff",
+            }
+        )?;
+
+        Ok(())
     }
 }
 
